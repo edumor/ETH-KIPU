@@ -14,8 +14,10 @@ contract Auction {
     uint constant MIN_BID_INCREMENT_PERCENT = 5;
     uint constant EXTENSION_TIME = 10 minutes;
     uint constant COMMISSION_PERCENT = 2;
+    uint constant MAX_MINUTES = 1440; // 24 horas
 
     bool public auctionEnded;
+    bool public paused = false; // Circuit breaker
 
     mapping(address => uint) public bids; // Fondos disponibles para retirar por cada usuario
     mapping(address => uint[]) private bidHistory; // Historial de ofertas por usuario
@@ -26,6 +28,8 @@ contract Auction {
     event AuctionEnded(address winner, uint amount);
     event Withdraw(address indexed bidder, uint amount);
     event PartialRefund(address indexed bidder, uint amount);
+    event Paused();
+    event Unpaused();
 
     // Modificadores 
     modifier onlyOwner() {
@@ -44,10 +48,15 @@ contract Auction {
         _;
     }
 
+    modifier notPaused() {
+        require(!paused, "Contract is paused");
+        _;
+    }
+
     // Inicializa la subasta con una duración en minutos y un máximo de extensión en minutos
     constructor(uint _durationMinutes, uint _maxExtensionMinutes) {
-        require(_durationMinutes > 0, "Duration must be greater than 0");
-        require(_maxExtensionMinutes >= 0, "Max extension must be >= 0");
+        require(_durationMinutes > 0 && _durationMinutes <= MAX_MINUTES, "Duration must be 1-1440 min");
+        require(_maxExtensionMinutes >= 0 && _maxExtensionMinutes <= MAX_MINUTES, "Max extension must be 0-1440 min");
         owner = msg.sender;
         auctionEndTime = block.timestamp + (_durationMinutes * 1 minutes);
         initialEndTime = auctionEndTime;
@@ -55,7 +64,7 @@ contract Auction {
     }
 
     // Permite ofertar, la oferta debe ser al menos 5% mayor que la actual
-    function bid() external payable auctionActive {
+    function bid() external payable auctionActive notPaused {
         require(msg.value > 0, "Bid must be greater than zero");
         uint minIncrement = highestBid + ((highestBid * MIN_BID_INCREMENT_PERCENT) / 100);
         require(msg.value >= minIncrement, "Bid not high enough");
@@ -86,7 +95,7 @@ contract Auction {
     }
 
     // Finaliza la subasta y transfiere el monto al owner descontando la comisión
-    function endAuction() external onlyOwner auctionHasEnded {
+    function endAuction() external onlyOwner auctionHasEnded notPaused {
         auctionEnded = true; // Efecto: marcar finalizada antes de transferir
 
         uint commission = (highestBid * COMMISSION_PERCENT) / 100;
@@ -100,7 +109,7 @@ contract Auction {
     }
 
     // Permite a los postores no ganadores retirar sus fondos reembolsables
-    function withdraw() external {
+    function withdraw() external notPaused {
         require(msg.sender != highestBidder, "Winner cannot withdraw");
         uint amount = bids[msg.sender];
         require(amount > 0, "No funds to withdraw");
@@ -116,7 +125,7 @@ contract Auction {
     }
 
     // Permite a los participantes solicitar el reembolso de ofertas previas menores a la oferta más alta actual
-    function partialRefund() external {
+    function partialRefund() external notPaused {
         uint[] storage history = bidHistory[msg.sender];
         uint totalRefund;
 
@@ -131,6 +140,18 @@ contract Auction {
         // Efecto: sumar al saldo reembolsable antes de cualquier transferencia
         bids[msg.sender] += totalRefund;
         emit PartialRefund(msg.sender, totalRefund);
+    }
+
+    // Pausar el contrato (solo owner)
+    function pause() external onlyOwner {
+        paused = true;
+        emit Paused();
+    }
+
+    // Reanudar el contrato (solo owner)
+    function unpause() external onlyOwner {
+        paused = false;
+        emit Unpaused();
     }
 
     // Devuelve todas las ofertas realizadas por un postor
