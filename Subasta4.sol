@@ -52,7 +52,7 @@ contract Subasta {
         // Guarda la oferta en el historial del usuario
         bidHistory[msg.sender].push(msg.value);
 
-        // Reembolsa al postor anterior
+        // Reembolsa al postor anterior (acumula para retiro)
         if (highestBid > 0) {
             pendingReturns[highestBidder] += highestBid;
         }
@@ -91,16 +91,17 @@ contract Subasta {
         uint amount = pendingReturns[msg.sender];
         require(amount > 0, "No funds to withdraw");
 
+        // Efectos: actualiza el estado antes de transferir (protege contra reentrancia)
         pendingReturns[msg.sender] = 0;
 
         uint commission = (amount * COMMISSION_PERCENT) / 100;
         uint payout = amount - commission;
 
-        // Envía la comisión al owner
+        // Interacciones: primero transfiere la comisión al owner
         (bool sentCommission, ) = payable(owner).call{value: commission}("");
         require(sentCommission, "Commission transfer failed");
 
-        // Envía el monto descontado al ofertante
+        // Luego transfiere el monto descontado al ofertante
         (bool sent, ) = payable(msg.sender).call{value: payout}("");
         require(sent, "Ether send failed");
     }
@@ -126,7 +127,7 @@ contract Subasta {
         return (highestBidder, highestBid);
     }
 
-    // Devuelve la lista de todos los oferentes y sus montos ofrecidos
+    // Devuelve la lista de todos los oferentes y sus montos ofrecidos (acumulados para retiro)
     function getAllBiddersAndAmounts() external view returns (address[] memory, uint[] memory) {
         uint[] memory amounts = new uint[](bidders.length);
         for (uint i = 0; i < bidders.length; i++) {
