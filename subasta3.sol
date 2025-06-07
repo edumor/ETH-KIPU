@@ -10,6 +10,7 @@ contract Auction {
     uint public highestBid;
     uint public auctionEndTime;
     uint public initialEndTime;
+    uint public maxEndTime; // Límite absoluto de extensión
     uint constant MIN_BID_INCREMENT_PERCENT = 5;
     uint constant EXTENSION_TIME = 10 minutes;
     uint constant COMMISSION_PERCENT = 2;
@@ -43,12 +44,14 @@ contract Auction {
         _;
     }
 
-    // Inicializa la subasta con una duración en minutos
-    constructor(uint _durationMinutes) {
+    // Inicializa la subasta con una duración en minutos y un máximo de extensión en minutos
+    constructor(uint _durationMinutes, uint _maxExtensionMinutes) {
         require(_durationMinutes > 0, "Duration must be greater than 0");
+        require(_maxExtensionMinutes >= 0, "Max extension must be >= 0");
         owner = msg.sender;
         auctionEndTime = block.timestamp + (_durationMinutes * 1 minutes);
         initialEndTime = auctionEndTime;
+        maxEndTime = auctionEndTime + (_maxExtensionMinutes * 1 minutes);
     }
 
     // Permite ofertar, la oferta debe ser al menos 5% mayor que la actual
@@ -73,9 +76,10 @@ contract Auction {
         highestBid = msg.value;
         highestBidder = msg.sender;
 
-        // Extiende la subasta si la oferta se realiza en los últimos 10 minutos
+        // Extiende la subasta si la oferta se realiza en los últimos 10 minutos, pero no más allá de maxEndTime
         if (auctionEndTime - block.timestamp <= EXTENSION_TIME) {
-            auctionEndTime += EXTENSION_TIME;
+            uint newEndTime = auctionEndTime + EXTENSION_TIME;
+            auctionEndTime = newEndTime > maxEndTime ? maxEndTime : newEndTime;
         }
 
         emit NewBid(msg.sender, msg.value);
