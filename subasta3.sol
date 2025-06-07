@@ -44,7 +44,6 @@ contract Auction {
     }
 
     // Inicializa la subasta con una duración en minutos
-    // _durationMinutes: Duración de la subasta en minutos
     constructor(uint _durationMinutes) {
         require(_durationMinutes > 0, "Duration must be greater than 0");
         owner = msg.sender;
@@ -84,12 +83,12 @@ contract Auction {
 
     // Finaliza la subasta y transfiere el monto al owner descontando la comisión
     function endAuction() external onlyOwner auctionHasEnded {
-        auctionEnded = true;
+        auctionEnded = true; // Efecto: marcar finalizada antes de transferir
 
         uint commission = (highestBid * COMMISSION_PERCENT) / 100;
         uint payout = highestBid - commission;
 
-        // Transferir comisión al owner
+        // Interacción externa: transferir Ether después de actualizar el estado
         (bool sentOwner, ) = payable(owner).call{value: payout}("");
         require(sentOwner, "Transfer to owner failed");
 
@@ -102,7 +101,10 @@ contract Auction {
         uint amount = bids[msg.sender];
         require(amount > 0, "No funds to withdraw");
 
+        // Efecto: actualizar el estado antes de la transferencia
         bids[msg.sender] = 0;
+
+        // Interacción externa: transferir Ether después de actualizar el estado
         (bool sent, ) = payable(msg.sender).call{value: amount}("");
         require(sent, "Ether send failed");
 
@@ -122,12 +124,12 @@ contract Auction {
         }
 
         require(totalRefund > 0, "No refundable amount");
+        // Efecto: sumar al saldo reembolsable antes de cualquier transferencia
         bids[msg.sender] += totalRefund;
         emit PartialRefund(msg.sender, totalRefund);
     }
 
     // Devuelve todas las ofertas realizadas por un postor
-    // bidder: Dirección del postor
     function getAllBids(address bidder) external view returns (uint[] memory) {
         return bidHistory[bidder];
     }
