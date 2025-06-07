@@ -1,0 +1,49 @@
+bidcode del contrato publicado y verificado en etherscan.io
+
+[0x5FDB89A39858b93AdF71ffBD1773F4ea0ECD86C4]
+
+
+direccion del contrato Trabajo_practico2.sol
+
+direccion del contrato: 0xfbcc3670716be8165c8481767ea51ffd55b42a44
+
+
+
+hash de la transaccion:  0x84803074bc4c033d8236982cf4181bc518943f8619ad3044825e9a5d4e7e00a9
+
+
+
+Trabajo_Practico2.sol
+
+0xff5E371be281eF894545a972E0508fF74B8C1C25
+
+Verificación del contrato en etherscan.io
+
+Successfully generated matching Bytecode and ABI for Contract Address [0xff5E371be281eF894545a972E0508fF74B8C1C25]
+
+
+
+despliegue y verificacion subasta.sol
+
+[0x407c4e190438060df96bc242b544c6eb78abecff]
+
+Note: Contract was created during TxHash: 0x706a02fdd184b757ab0b98547fe5028fa1588473e0aef84b722f3e79554e2e47
+
+
+
+despliegue y verificación de Subasta.sol,  donde indica la descripcion de lo que vamos a subastar
+
+[0x34752035801dEec159e31a7ea5647F194d02dbD9]
+
+Contract was created during TxHash: 0x9389dd1a081242cfc286d7435edb040c1b400bed9eace0276d7033438644cb21
+
+
+
+despliegue y verificacion de Subasta2.sol con la descripcion del codigo 
+
+06/06/2025
+
+
+Successfully generated matching Bytecode and ABI for Contract [0xc922932f03061D69a88F204A715b61Bf00A75DAa]
+
+Note: Contract was created during TxHash: 0xd0aa811a3959eca32a43caa331292d23a39032ade64ae574894eb64ea48c52f9
