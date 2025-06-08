@@ -141,4 +141,11 @@ contract Auction {
         deposits[msg.sender] = 0;
         payable(msg.sender).transfer(refund);
     }
+
+    // Permite al owner retirar fondos restantes del contrato tras finalizar la subasta
+    function ownerWithdraw() external onlyOwner {
+        require(ended, "La subasta no ha finalizado.");
+        require(address(this).balance > 0, "No hay fondos.");
+        payable(owner).transfer(address(this).balance);
+    }
 }

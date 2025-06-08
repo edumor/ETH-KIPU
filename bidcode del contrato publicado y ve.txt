@@ -61,3 +61,10 @@ Successfully generated matching Bytecode and ABI for Contract Address [0xCfb4F08
 
 Note: Contract was created during TxHash: 0xf1b161caf54bf092880bd37600047e2ffde24dbc5c346b7a692f04991d6a3c9e
 
+
+publicacion y verificacion Subasta5.sol
+
+Successfully generated matching Bytecode and ABI for Contract Address [0xaf440b4E844046226e171247A14842797d01164a]
+
+Note: Contract was created during TxHash: 0xf6c28db2fc191ee97726e1cc0dd00198228ad8e96a698f2ddef03b7f2cd218de
+
