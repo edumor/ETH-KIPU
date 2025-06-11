@@ -68,3 +68,19 @@ Successfully generated matching Bytecode and ABI for Contract Address [0x03C11e0
 
 
 Note: Contract was created during TxHash: 0xc27094fdd98f55cffee5e6f45ede4a02c4109f604e44b619a6af2e1743357aaf
+
+
+publicacion y verificadion Subasta.sol (corregida)
+
+Successfully generated matching Bytecode and ABI for Contract Address [0xae1ccb0C3F84aBA2e4F573Af847af00E214b3363]
+
+Note: Contract was created during TxHash: 0x569d992f5084a488d31c15888facfa9e37e21e916b3e41d5aa9e8d39543a23dc
+
+https://sepolia.ethersc
+an.io/address/0xae1ccb0C3F84aBA2e4F573Af847af00E214b3363
+
+
+publicacion y verificacion Subasta2.sol
+
+
+Successfully generated matching Bytecode and ABI for Contract Address [0xe14c0d7096E8e664f4fE6755eA15883af98C34ba]
